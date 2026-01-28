@@ -1,0 +1,15 @@
+# Dfinição da VM
+vm_name = "Nome da VM"
+vm_size = "Tamanho"
+location = "Região"
+
+# Rede Virtual
+vnet_name = "REDE"
+subnet_name = "SubRede"
+existing_vnet_rg_name = "Grupo de Recursos da rede"
+
+resource_group_name = "Grupo de Recursos"
+nsg_name = "NSG"
+
+# Admin Credentials
+admin_username = "UserName"
