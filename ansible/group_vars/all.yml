@@ -1,0 +1,17 @@
+# Variaveis Globais para todos os hosts
+
+# Versões de Apps
+
+nodejs_version: "20.11.0" # LTS
+git_version: "2.43.0"
+
+# COniguração da Aplicação
+app_name: "WebDesbloq"
+app_repo: "https://github.com/Oh20/WebDesbloq.git"
+app_directory: "c:\\Apps\\WebDesbloq"
+app_port: 3003
+
+# Configurando o IIS
+iis_site_name: "WebDesbloq-Frontend"
+iis_site_port: 80
+iis_site_path: "C:\\inetpub\\wwwroot\\WebDesbloq"

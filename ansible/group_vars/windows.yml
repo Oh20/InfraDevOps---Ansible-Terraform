@@ -1,0 +1,9 @@
+---
+# Configurações específicas para hosts Windows
+
+# Timeout aumentado para Windows
+ansible_winrm_operation_timeout_sec: 60
+ansible_winrm_read_timeout_sec: 70
+
+# PowerShell
+ansible_shell_type: powershell
