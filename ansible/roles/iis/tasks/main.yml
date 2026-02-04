@@ -1,0 +1,83 @@
+---
+# Role: IIS
+# Configurar Internet Information Services
+
+- name: Instalar IIS e features necessárias
+  ansible.windows.win_feature:
+    name: "{{ item }}"
+    state: present
+    include_management_tools: yes
+  loop: "{{ iis_features }}"
+  notify: restart iis
+  tags: iis-install
+
+- name: Criar diretório do site
+  ansible.windows.win_file:
+    path: "{{ iis_site_path }}"
+    state: directory
+  tags: iis-config
+
+- name: Remover site padrão do IIS
+  community.windows.win_iis_website:
+    name: "Default Web Site"
+    state: absent
+  when: remove_default_website
+  tags: iis-config
+
+- name: Criar Application Pool customizado
+  community.windows.win_iis_webapppool:
+    name: "{{ iis_app_pool_name }}"
+    state: started
+    attributes:
+      managedRuntimeVersion: ""  # No Managed Code (para sites estáticos)
+      managedPipelineMode: "Integrated"
+      startMode: "AlwaysRunning"
+      autoStart: true
+  tags: iis-config
+
+- name: Criar site IIS para frontend
+  community.windows.win_iis_website:
+    name: "{{ iis_site_name }}"
+    state: started
+    port: "{{ iis_site_port }}"
+    physical_path: "{{ iis_site_path }}"
+    application_pool: "{{ iis_app_pool_name }}"
+  notify: restart iis
+  tags: iis-config
+
+- name: Configurar permissões do diretório do site
+  ansible.windows.win_acl:
+    path: "{{ iis_site_path }}"
+    user: "IIS_IUSRS"
+    rights: ReadAndExecute
+    type: allow
+    state: present
+  tags: iis-permissions
+
+- name: Criar página de teste (index.html)
+  ansible.windows.win_copy:
+    content: |
+      <!DOCTYPE html>
+      <html>
+      <head>
+          <title>WebDesbloq</title>
+      </head>
+      <body>
+          <h1>WebDesbloq - IIS Configurado!</h1>
+          <p>Aguardando deploy da aplicação...</p>
+      </body>
+      </html>
+    dest: "{{ iis_site_path }}\\index.html"
+  tags: iis-test
+
+- name: Verificar status do site IIS
+  ansible.windows.win_shell: |
+    Get-IISSite -Name "{{ iis_site_name }}" | Select-Object Name, State, @{n='Bindings';e={$_.Bindings.bindingInformation}}
+  register: iis_site_status
+  changed_when: false
+  tags: iis-verify
+
+- name: Mostrar status do IIS
+  ansible.builtin.debug:
+    msg: "{{ iis_site_status.stdout_lines }}"
+  tags: iis-verify

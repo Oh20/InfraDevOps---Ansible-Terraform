@@ -1,0 +1,21 @@
+---
+# Valores padrão para role common
+
+# Diretórios
+app_base_directory: "C:\\Apps"
+log_directory: "C:\\Logs"
+
+# Timezone
+windows_timezone: "E. South America Standard Time"
+
+# Pacotes a instalar via Chocolatey
+common_packages:
+  - { name: "git", version: "2.43.0" }
+  - { name: "7zip" }
+  # Adicione mais conforme necessário
+
+# Regras de Firewall
+firewall_rules:
+  - { name: "Node.js App", port: "3000" }
+  - { name: "HTTP", port: "80" }
+  - { name: "HTTPS", port: "443" }

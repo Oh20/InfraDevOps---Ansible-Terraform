@@ -1,0 +1,26 @@
+# Configurando features do IIS 
+iis_features:
+  - Web-Server
+  - Web-WebServer
+  - Web-Common-Http
+  - Web-Default-Doc
+  - Web-Dir-Browsing
+  - Web-Http-Errors
+  - Web-Static-Content
+  - Web-Health
+  - Web-Http-Logging
+  - Web-Performance
+  - Web-Stat-Compression
+  - Web-Security
+  - Web-Filtering
+  - Web-Mgmt-Tools
+  - Web-Mgmt-Console
+
+# Configurando o site padrão do IIS
+iis_site_name: "WebDesbloq-Frontend"
+iis_site_path: "C:\\inetpub\\wwwroot\\WebDesbloq"
+iis_site_port: 80
+iis_app_pool_name: "WebDesbloqAppPool"
+
+# Remover site padrão?
+remove_default_website: true

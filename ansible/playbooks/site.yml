@@ -1,19 +1,12 @@
+# playbooks/site.yml
 ---
-- name: Testar conectividade WinRM
-  hosts: all
-  gather_facts: no
+- name: Configurar Windows Server para WebDesbloq
+  hosts: windows
+  gather_facts: yes
   
-  tasks:
-    - name: Ping Windows
-      ansible.windows.win_ping:
-      
-    - name: Obter informações do sistema
-      ansible.windows.win_shell: |
-        Write-Output "Hostname: $env:COMPUTERNAME"
-        Write-Output "Usuario: $env:USERNAME"
-        Write-Output "OS: $(Get-CimInstance Win32_OperatingSystem | Select-Object -ExpandProperty Caption)"
-      register: system_info
-      
-    - name: Mostrar informações
-      debug:
-        msg: "{{ system_info.stdout_lines }}"
+  roles:
+    - common        # Ferramentas básicas (git, 7zip)
+    - nodejs        # Node.js específico
+    - rsat          # RSAT específico
+    - iis           # IIS
+    - webdesbloq-deploy  # Deploy da app

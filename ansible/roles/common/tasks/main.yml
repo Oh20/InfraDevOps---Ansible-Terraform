@@ -1,0 +1,61 @@
+# Setup do Windows Server
+
+- name: Configurar timezone
+  community.windows.win_timezone:
+    timezone: {{ windows_timezone }}
+  tags: timezone
+
+- name: Configurando diretorios
+  ansible.windows.win_file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - "{{ app_base_directory }}"
+    - "{{ logs_directory }}"
+  tags: directories
+
+- name: Instalando Chocolatey
+  ansible.windows.win_chocolatey:
+    name: chocolatey
+    state: present
+  tags: chocolatey
+
+- name: Instalando ferramentas
+  ansible.windows.win_chocolatey:
+    name: "{{ item.name }}"
+    version: "{{ item.version | default(omit) }}"
+    state: present
+  loop: {{ common_packeges}}
+  tags: 
+    - chocolatey
+    - packeges
+
+- name: Adicionando Git ao Path do Sistema
+  ansible.windows.win_path:
+    elements:
+      - "C:\\Program Files\\Git\\cmd"
+    state: present
+  when: "'git' in common_packeges | map(attribute='name') | list"
+  tags: git
+
+- name: Configurar Windows Firewall - Permitir portas da Aplicação
+  community.windows.win_firewall_rule:
+    name: "{{ item.name }}"
+    localport: "{{ item.port }}"
+    action: allow
+    direction: in
+    protocol: tcp
+    state: present
+    enabled: yes
+  loop: "{{ firewall_rules }}"
+  tags: firewall
+
+- name: Verificar ferramentas
+  ansible.windows.win_command: "{{ item }} --version"
+  registers: tool_check
+  change_when: false
+  failed_when: false
+  loop: 
+    - git
+    - choco
+  tags: verify

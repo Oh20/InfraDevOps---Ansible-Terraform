@@ -66,25 +66,29 @@ resource "azurerm_windows_virtual_machine" "main" {
 }
 
 resource "azurerm_virtual_machine_extension" "winrm" {
-  name = "${var.vm_name}-winrm-config"
-  virtual_machine_id = azurerm_windows_virtual_machine.main.id
-  publisher = "Microsoft.Compute"
-  type = "CustomScriptExtension"
-  type_handler_version = "1.10"
+  name                       = "${var.vm_name}-winrm-config"
+  virtual_machine_id         = azurerm_windows_virtual_machine.main.id
+  publisher                  = "Microsoft.Compute"
+  type                       = "CustomScriptExtension"
+  type_handler_version       = "1.10"
+  auto_upgrade_minor_version = true
 
   settings = jsonencode({
-    "commandToExecute" = "powershell -ExecutionPolicy Unrestricted -File ConfigureWinRM.ps1"
+    fileUris = [
+      # expõe esse arquivo via alguma URL HTTP/HTTPS
+      "https://cs2100320029bce4516.blob.core.windows.net/container/ConfigureWinRM.ps1"
+    ]
   })
 
   protected_settings = jsonencode({
-    "fileUris" = []
-    script = base64encode(file("${path.module}/scripts/ConfigureWinRM.ps1"))
+    commandToExecute = "powershell -ExecutionPolicy Unrestricted -File ConfigureWinRM.ps1"
   })
 
   tags = {
     Purpose = "WinRM Configuration for Ansible"
   }
 }
+
 
 #resource "azurerm_virtual_machine_extension" "winrm" {
 #  name                 = "${var.vm_name}-winrm-config"

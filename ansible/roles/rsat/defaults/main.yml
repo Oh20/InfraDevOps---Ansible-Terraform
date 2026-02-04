@@ -1,0 +1,4 @@
+---
+rsat_features:
+  - RSAT-AD-PowerShell
+  - RSAT-AD-Tools  # GUI tools (opcional)
